@@ -2,10 +2,11 @@
 Made in Flask
 Todo:
 
-[] Seperate index.html, index.css, index.js
+[X] make Pi work with Py/Kiosk Setup (DSI buffer jank)
+[ ] Seperate index.html, index.css, index.js
 
-[] Add logging
+[ ] Add logging
 
-[] Add a game or cool feature
+[ ] Add a game or cool feature
 
-[] Phone link app
+[ ] Phone link app

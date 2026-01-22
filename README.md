@@ -3,6 +3,7 @@ Made in Flask
 Todo:
 
 [X] make Pi work with Py/Kiosk Setup (DSI buffer jank)
+
 [ ] Seperate index.html, index.css, index.js
 
 [ ] Add logging

@@ -1,0 +1,835 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydraGuard Kiosk OS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+
+
+:root {
+    --fast: 120ms;
+    --normal: 180ms;
+    --slow: 240ms;
+    --ease: cubic-bezier(.2,.8,.2,1);
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: #000000;
+    width: 800px;
+    height: 600px;
+    overflow: hidden;
+}
+
+.container {
+    width: 800px;
+    height: 600px;
+    position: relative;
+}
+
+
+
+.welcome-screen,
+.dashboard,
+.subpage {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.98);
+    transition:
+        opacity var(--normal) var(--ease),
+        transform var(--normal) var(--ease);
+}
+
+.dashboard.visible,
+.subpage.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+}
+
+.welcome-screen {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+}
+
+.welcome-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1.02);
+}
+
+
+.welcome-screen {
+    background: #fff;
+    border: 6px solid #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 64px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    margin-bottom: 60px;
+}
+
+
+.unlock {
+    background: #fff;
+    border: 4px solid #000;
+    padding: 26px 60px;
+    font-size: 20px;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 8px 8px 0 #000;
+    transition:
+        background var(--fast),
+        color var(--fast),
+        transform var(--fast) var(--ease),
+        box-shadow var(--fast) var(--ease);
+}
+
+.unlock:hover {
+    background: #000;
+    color: #fff;
+}
+
+.unlock:active {
+    transform: translate(6px, 6px);
+    box-shadow: none;
+}
+
+.unlock * {
+    display: none;
+}
+
+.unlock .text {
+    display: block;
+}
+
+
+   
+.dashboard {
+    background: #fff;
+}
+
+
+.header {
+    height: 66px;
+    background: #000;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    border-bottom: 6px solid #000;
+}
+
+.header-title {
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.current-time {
+    font-size: 20px;
+    font-weight: 900;
+    transition: opacity var(--fast);
+}
+
+
+
+.content {
+    padding: 24px;
+    height: calc(100% - 66px);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+
+
+
+.card {
+    background: #fff;
+    border: 4px solid #000;
+    box-shadow: 6px 6px 0 #000;
+    padding: 22px;
+    cursor: pointer;
+
+    opacity: 0;
+    transform: translateY(16px);
+
+    transition:
+        opacity var(--normal) var(--ease),
+        transform var(--normal) var(--ease),
+        box-shadow var(--fast) var(--ease);
+}
+
+.dashboard.visible .card {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+.dashboard.visible .card:nth-child(1) { transition-delay: 40ms; }
+.dashboard.visible .card:nth-child(2) { transition-delay: 80ms; }
+.dashboard.visible .card:nth-child(3) { transition-delay: 120ms; }
+.dashboard.visible .card:nth-child(4) { transition-delay: 160ms; }
+.dashboard.visible .card:nth-child(5) { transition-delay: 200ms; }
+.dashboard.visible .card:nth-child(6) { transition-delay: 240ms; }
+
+.card:active {
+    transform: translate(3px, 3px) scale(0.98);
+    box-shadow: none;
+}
+
+
+.card-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.card-icon {
+    color: #fff;
+    font-size: 26px;
+}
+
+.card-title {
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.card-value {
+    font-size: 42px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.card-unit {
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+.card-status {
+    margin-top: 14px;
+    border: 3px solid #000;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.subpage {
+    background: #fff;
+    z-index: 200;
+    transform: translateX(40px);
+}
+
+.subpage.visible {
+    transform: translateX(0);
+}
+
+
+.subpage-header {
+    height: 66px;
+    background: #000;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 20px;
+    border-bottom: 6px solid #000;
+}
+
+.subpage-title {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+
+.back-button {
+    background: #fff;
+    color: #000;
+    border: 4px solid #000;
+    padding: 10px 20px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 #000;
+    transition:
+        background var(--fast),
+        color var(--fast),
+        transform var(--fast) var(--ease),
+        box-shadow var(--fast) var(--ease);
+}
+
+.back-button:active {
+    transform: translate(3px, 3px);
+    box-shadow: none;
+}
+
+.intake-summary {
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.intake-card {
+    border: 4px solid #000;
+    padding: 16px 20px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.intake-count {
+    font-size: 40px;
+    font-weight: 900;
+}
+
+
+.progress-bar {
+    width: 300px;
+    height: 18px;
+    border: 3px solid #000;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #000;
+    width: 0%;
+    transition: width var(--slow) var(--ease);
+}
+
+.goal-message {
+    margin-top: 8px;
+    font-weight: 900;
+}
+
+.calendar {
+    padding: 24px;
+}
+
+.calendar-header {
+    font-size: 18px;
+    font-weight: 900;
+    margin-bottom: 16px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+}
+
+.day-label {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.day-cell {
+    border: 3px solid #000;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+}
+
+.day-cell.completed {
+    background: #000;
+    color: #fff;
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="welcome-screen" id="welcomeScreen">
+            <div class="logo-container">
+                <div class="logo">HydraGuard</div>
+            </div>
+            <a class="unlock" href="#" onclick="openDashboard()">
+                <span class="top-key"></span>
+                <span class="text">Unlock</span>
+                 <span class="bottom-key-1"></span>
+                <span class="bottom-key-2"></span>
+            </a>
+        </div>
+
+        
+        <div class="dashboard" id="dashboard">
+            <div class="header">
+                <div class="header-title">HYDRAGUARD</div>
+                <div class="current-time" id="currentTime">
+                    <i class="fas fa-clock time-icon"></i>
+                    <span id="timeDisplay">--:--</span>
+                </div>
+            </div>
+            <div class="content">
+                <div class="grid">
+                    <div class="card clickable" onclick="openWaterPage()">
+                        <div class="card-icon-wrapper">
+                            <i class="fas fa-droplet card-icon"></i>
+                        </div>
+                        <div class="card-title">Water Intake</div>
+                        <p>Press Me! </p>
+                        <div class="card-value">6.5</div>
+                        <div class="card-unit">cups today</div>
+                        <span class="card-status status-normal">
+                            <i class="fas fa-circle-check"></i>
+                            On Track
+                        </span>
+                    </div>
+
+                    <div class="card clickable" onclick="openInsulinPage()">
+                        
+                        <div class="card-icon-wrapper">
+                            <i class="fas fa-syringe card-icon"></i>
+                        </div>
+                        
+                        <div class="card-title">Insulin</div>
+                        <p>Press me!</p>
+                        <div class="card-value">24</div>
+                        <div class="card-unit">units today</div>
+                        <span class="card-status status-info">
+                            <i class="fas fa-clipboard-check"></i>
+                            Logged
+                        </span>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-icon-wrapper">
+                            <i class="fas fa-vial card-icon"></i>
+                        </div>
+                        <div class="card-title">Glucose</div>
+                        <div class="card-value">95</div>
+                        <div class="card-unit">mg/dL</div>
+                        <span class="card-status status-normal">
+                            <i class="fas fa-circle-check"></i>
+                            Normal
+                        </span>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-icon-wrapper">
+                            <i class="fas fa-candy-cane card-icon"></i>
+                        </div>
+                        <div class="card-title">Blood Sugar</div>
+                        <div class="card-value">105</div>
+                        <div class="card-unit">mg/dL</div>
+                        <span class="card-status status-normal">
+                            <i class="fas fa-circle-check"></i>
+                            Normal
+                        </span>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-icon-wrapper">
+                            <i class="fas fa-heartbeat card-icon"></i>
+                        </div>
+                        <div class="card-title">Heart Rate</div>
+                        <div class="card-value">72</div>
+                        <div class="card-unit">bpm</div>
+                        <span class="card-status status-normal">
+                            <i class="fas fa-circle-check"></i>
+                            Normal
+                        </span>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-icon-wrapper">
+                            <i class="fas fa-temperature-half card-icon"></i>
+                        </div>
+                        <div class="card-title">Temperature</div>
+                        <div class="card-value">98.2</div>
+                        <div class="card-unit">°F</div>
+                        <span class="card-status status-normal">
+                            <i class="fas fa-circle-check"></i>
+                            Normal
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="subpage" id="waterSubpage">
+            <div class="subpage-header">
+                <button class="back-button" onclick="closeWaterPage()">
+                    <i class="fas fa-arrow-left"></i>
+                    BACK
+                </button>
+                <div class="subpage-title">HYDRATION TRACKER</div>
+            </div>
+            
+            <div class="intake-summary" id="intakeSummary">
+                <div class="intake-card">
+                    <div>
+                        <i class="fas fa-droplet" style="font-size:28px;color:#888888;"></i>
+                    </div>
+                    <div class="intake-meta">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div class="intake-count" id="bottleCount">0</div>
+                            <div style="font-weight:700;color:#666;">bottles today</div>
+                        </div>
+                        <div style="font-size:13px;color:#777;">Daily goal: <strong>3 bottles</strong></div>
+                    </div>
+                </div>
+
+                <div class="progress-wrap">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;">
+                        <div class="goal-message" id="goalMessage">—</div>
+                        <div id="bottleIcons" style="color:#7c7c7c;font-size:18px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="calendar">
+                <div class="calendar-header">
+                    <i class="fas fa-calendar-days"></i>
+                    January 2026
+                </div>
+                <div class="calendar-grid">
+                    <div class="day-label">Sun</div>
+                    <div class="day-label">Mon</div>
+                    <div class="day-label">Tue</div>
+                    <div class="day-label">Wed</div>
+                    <div class="day-label">Thu</div>
+                    <div class="day-label">Fri</div>
+                    <div class="day-label">Sat</div>
+                    
+                    <div class="day-cell"></div>
+                    <div class="day-cell"></div>
+                    <div class="day-cell"></div>
+                    <div class="day-cell"></div>
+                    <div class="day-cell completed">
+                        <div class="day-number">1</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">2</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">3</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    
+                    <div class="day-cell completed">
+                        <div class="day-number">4</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">5</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">6</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">7</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">8</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">9</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">10</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    
+                    <div class="day-cell completed">
+                        <div class="day-number">11</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">12</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">13</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">14</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">15</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">16</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">17</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    
+                    <div class="day-cell completed">
+                        <div class="day-number">18</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">19</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell completed">
+                        <div class="day-number">20</div>
+                        <i class="fas fa-droplet water-icon"></i>
+                    </div>
+                    <div class="day-cell">
+                        <div class="day-number">21</div>
+                    </div>
+                    <div class="day-cell">
+                        <div class="day-number">22</div>
+                    </div>
+                    <div class="day-cell">
+                        <div class="day-number">23</div>
+                    </div>
+                    <div class="day-cell">
+                        <div class="day-number">24</div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="subpage" id="insulinSubpage">
+    <div class="subpage-header">
+        <button class="back-button" onclick="closeInsulinPage()">
+            <i class="fas fa-arrow-left"></i>
+            BACK
+        </button>
+        <div class="subpage-title">INSULIN TRACKER</div>
+    </div>
+    <div class="subpage" id="glucoseSubpage">
+    <div class="subpage-header">
+        <button class="back-button" onclick="closeGlucosePage()">
+            <i class="fas fa-arrow-left"></i>
+            BACK
+        </button>
+        <div class="subpage-title">GLUCOSE TRACKER</div>
+    </div>
+
+    <!-- DAILY SUMMARY -->
+    <div class="intake-summary">
+        <div class="intake-card">
+            <div>
+                <i class="fas fa-vial" style="font-size:28px;"></i>
+            </div>
+            <div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div class="intake-count">95</div>
+                    <div style="font-weight:700;color:#666;">mg/dL</div>
+                </div>
+                <div style="font-size:13px;color:#777;">
+                    Target range: <strong>70–140 mg/dL</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-wrap">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width:68%"></div>
+            </div>
+            <div style="margin-top:10px;display:flex;justify-content:space-between;">
+                <div class="goal-message">Within normal range</div>
+                <div style="font-size:18px">🧪🧪</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GLUCOSE READINGS -->
+    <div class="calendar">
+        <div class="calendar-header">
+            <i class="fas fa-clipboard-list"></i>
+            Today’s Readings
+        </div>
+
+        <div class="day-cell completed" style="margin-bottom:30px;">
+            7:50 AM — 92 mg/dL
+        </div>
+
+        <div class="day-cell completed" style="margin-bottom:30px;">
+            12:30 PM — 98 mg/dL
+        </div>
+
+        <div class="day-cell" style="margin-bottom:30px;">
+            6:05 PM — 95 mg/dL
+        </div>
+    </div>
+</div>
+
+
+    <div class="intake-summary">
+        <div class="intake-card">
+            <div>
+                <i class="fas fa-syringe" style="font-size:28px;"></i>
+            </div>
+            <div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div class="intake-count">24</div>
+                    <div style="font-weight:700;color:#666;">units today</div>
+                </div>
+                <div style="font-size:13px;color:#777;">
+                    Daily limit: <strong>30 units</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-wrap">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width:80%"></div>
+            </div>
+            <div style="margin-top:10px;display:flex;justify-content:space-between;">
+                <div class="goal-message">Within safe range</div>
+                <div style="font-size:18px">💉💉💉</div>
+            </div>
+        </div>
+    </div>
+<div class="calendar">
+    <div class="calendar-header">
+        <i class="fas fa-clipboard-list"></i>
+        Today’s Doses
+    </div>
+
+    <div class="day-cell" style="margin-bottom:30px;">
+        8:10 AM — 8 units
+    </div>
+
+    <div class="day-cell" style="margin-bottom:30px;">
+        1:45 PM — 10 units
+    </div>
+
+    <div class="day-cell" style="margin-bottom:30px;">
+        6:30 PM — 6 units
+    </div>
+</div>
+
+</div>
+
+
+    </div>
+
+    <script>
+        function updateTime() {
+            fetch('/api/time')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('timeDisplay').textContent = data.time;
+                })
+                .catch(error => console.error('Error fetching time:', error));
+        }
+
+        function openDashboard() {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('dashboard').classList.add('visible');
+                document.querySelectorAll('.card').forEach(card => {
+                    card.classList.add('animate-in');
+                });
+            }, 500);
+        }
+
+        function openWaterPage() {
+            document.getElementById('waterSubpage').classList.add('visible');
+        }
+
+        function closeWaterPage() {
+            document.getElementById('waterSubpage').classList.remove('visible');
+        }
+
+        function openInsulinPage() {
+            document.getElementById('insulinSubpage').classList.add('visible');
+        }
+
+        function closeInsulinPage() {
+            document.getElementById('insulinSubpage').classList.remove('visible');
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        
+        
+        const BOTTLES_TODAY = 2; 
+        const GOAL = 3;
+
+        function renderWaterSummary() {
+            const countEl = document.getElementById('bottleCount');
+            const fillEl = document.getElementById('progressFill');
+            const msgEl = document.getElementById('goalMessage');
+            const iconsEl = document.getElementById('bottleIcons');
+
+            const pct = Math.min(100, Math.round((BOTTLES_TODAY / GOAL) * 100));
+            countEl.textContent = BOTTLES_TODAY;
+            fillEl.style.width = pct + '%';
+
+            
+            iconsEl.textContent = ''.padStart(BOTTLES_TODAY, '');
+
+            if (BOTTLES_TODAY >= GOAL) {
+                msgEl.textContent = 'Goal reached — great job!';
+                msgEl.classList.add('goal-met');
+                msgEl.classList.remove('goal-missed');
+            } else {
+                const remaining = GOAL - BOTTLES_TODAY;
+                msgEl.textContent = `Need ${remaining} more bottle${remaining>1 ? 's' : ''}`;
+                msgEl.classList.add('goal-missed');
+                msgEl.classList.remove('goal-met');
+            }
+        }
+
+        
+        renderWaterSummary();
+    </script>
+</body>
+</html>

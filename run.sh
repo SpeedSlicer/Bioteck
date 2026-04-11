@@ -11,7 +11,7 @@ nohup python3 -m http.server 5001 >> "$LOGFILE" 2>&1 &
 echo "HTTP server started (PID $!)" >> "$LOGFILE"
 
 sleep 1
-/bin/chromium-browser \
+chromium-browser \
   --kiosk \
   --ozone-platform=wayland \
   --start-maximized \

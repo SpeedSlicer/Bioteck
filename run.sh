@@ -5,10 +5,6 @@ cd /home/shaun/Bioteck
 export DISPLAY=:0
 export XAUTHORITY=/home/shaun/.Xauthority
 
-# prevent duplicates
-pkill -f main.py
-
-# open terminal AND run Flask ONCE
 lxterminal -e "bash -c 'python3 main.py'" &
 
 # wait for server

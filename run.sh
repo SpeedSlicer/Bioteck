@@ -1,18 +1,12 @@
 #!/bin/bash
+# ai has no clue what its doing. im on my own
+nohup python3 -m http.server 5001 > /dev/null 2>&1 &
+xset s noblank
+xset s off
+xset -dpms
 
-cd /home/shaun/Bioteck
+unclutter -idle 0 &
 
-export DISPLAY=:0
-export XAUTHORITY=/home/shaun/.Xauthority
-
-lxterminal -e "bash -c 'python3 main.py'" &
-
-# wait for server
-until curl -s http://127.0.0.1:5001 > /dev/null; do
-  sleep 0.5
-done
-
-chromium --kiosk \
-  --noerrdialogs \
-  --disable-infobars \
-  http://127.0.0.1:5001
+sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' /home/pi/.config/chromium/Default/Preferences
+sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' /home/pi/.config/chromium/Default/Preferences
+chromium-browser --kiosk --noerrdialogs --disable-infobars http://127.0.0.1:5001 &

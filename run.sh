@@ -5,10 +5,18 @@ LOGFILE="/home/shaun/Bioteck/run.log"
 
 echo "----- START $(date) -----" >> "$LOGFILE"
 
-sleep 3
-nohup python3 -m http.server 5001 >> "$LOGFILE" 2>&1 &
+PORT=5001
 
-echo "HTTP server started (PID $!)" >> "$LOGFILE"
+if ss -tulpn | grep -q ":$PORT "; then
+    echo "Port $PORT is in use, switching..." >> "$LOGFILE"
+    PORT=5002
+fi
+
+sleep 3
+nohup python3 -m http.server $PORT >> "$LOGFILE" 2>&1 &
+SERVER_PID=$!
+
+echo "HTTP server started on port $PORT (PID $SERVER_PID)" >> "$LOGFILE"
 
 sleep 1
 chromium-browser \
